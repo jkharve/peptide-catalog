@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beginner's Guide to Tirzepatide</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #faf6f0;
+    --warm-white: #f5ede0;
+    --blush: #e8c4b8;
+    --rose: #c9786a;
+    --deep-rose: #8b4a40;
+    --sage: #7a9e7e;
+    --deep-sage: #4a6e4e;
+    --sand: #c8b89a;
+    --charcoal: #2a2420;
+    --mid: #5a4a42;
+    --light-mid: #8a7a72;
+    --accent-gold: #c4a35a;
+    --accent-teal: #4a8a8a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--cream);
+    color: var(--charcoal);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--charcoal);
+    padding: 80px 40px 70px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 80% at 80% 20%, rgba(201,120,106,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 60% at 10% 80%, rgba(122,158,126,0.08) 0%, transparent 50%);
+  }
+
+  .hero-inner {
+    max-width: 780px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .hero-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--rose);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .hero-label::before {
+    content: '';
+    display: inline-block;
+    width: 28px;
+    height: 1px;
+    background: var(--rose);
+  }
+
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(38px, 6vw, 62px);
+    font-weight: 700;
+    color: white;
+    line-height: 1.1;
+    margin-bottom: 8px;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: var(--blush);
+  }
+
+  .hero-sub {
+    font-size: 15px;
+    color: rgba(255,255,255,0.45);
+    font-weight: 300;
+    margin-top: 18px;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.05em;
+  }
+
+  .hero-brands {
+    display: flex;
+    gap: 12px;
+    margin-top: 28px;
+    flex-wrap: wrap;
+  }
+
+  .brand-tag {
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    border: 1px solid rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.6);
+  }
+
+  .brand-tag.diabetes { border-color: rgba(196,163,90,0.4); color: var(--accent-gold); }
+  .brand-tag.weight { border-color: rgba(201,120,106,0.4); color: var(--rose); }
+
+  /* ── DISCLAIMER ── */
+  .disclaimer {
+    background: rgba(201,120,106,0.08);
+    border-left: 3px solid var(--rose);
+    padding: 16px 22px;
+    margin: 40px auto;
+    max-width: 780px;
+    border-radius: 0 8px 8px 0;
+    font-size: 13px;
+    color: var(--mid);
+    line-height: 1.6;
+  }
+
+  .disclaimer strong { color: var(--deep-rose); }
+
+  /* ── MAIN LAYOUT ── */
+  .content {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 0 40px 100px;
+  }
+
+  /* ── SECTION HEADERS ── */
+  .section {
+    margin-top: 60px;
+  }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--light-mid);
+    margin-bottom: 10px;
+  }
+
+  .section h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--charcoal);
+    margin-bottom: 22px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(200,184,154,0.35);
+  }
+
+  .section p {
+    font-size: 15px;
+    color: var(--mid);
+    margin-bottom: 16px;
+    line-height: 1.8;
+  }
+
+  /* ── MECHANISM CARDS ── */
+  .mechanism-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 24px;
+  }
+
+  @media (max-width: 600px) { .mechanism-grid { grid-template-columns: 1fr; } }
+
+  .mech-card {
+    background: white;
+    border-radius: 14px;
+    padding: 24px;
+    border: 1px solid rgba(200,184,154,0.3);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .mech-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+
+  .mech-card.glp::before { background: linear-gradient(90deg, var(--rose), var(--blush)); }
+  .mech-card.gip::before { background: linear-gradient(90deg, var(--accent-gold), var(--sand)); }
+
+  .mech-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 14px;
+    color: var(--charcoal);
+  }
+
+  .mech-card.glp .mech-title { color: var(--deep-rose); }
+  .mech-card.gip .mech-title { color: #7a5a20; }
+
+  .mech-card ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .mech-card ul li {
+    font-size: 13.5px;
+    color: var(--mid);
+    padding-left: 18px;
+    position: relative;
+    line-height: 1.6;
+  }
+
+  .mech-card ul li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--sand);
+    font-size: 12px;
+  }
+
+  .mech-card.gip ul li::before { color: var(--accent-gold); }
+
+  .vs-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px 0 8px;
+    gap: 16px;
+  }
+
+  .vs-badge::before, .vs-badge::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(200,184,154,0.35);
+  }
+
+  .vs-badge span {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--light-mid);
+    letter-spacing: 0.1em;
+    padding: 4px 12px;
+    border: 1px solid rgba(200,184,154,0.35);
+    border-radius: 20px;
+  }
+
+  /* ── DOSING TIMELINE ── */
+  .timeline {
+    margin-top: 24px;
+    position: relative;
+    padding-left: 24px;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 7px;
+    top: 8px;
+    bottom: 8px;
+    width: 1px;
+    background: linear-gradient(180deg, var(--rose), var(--sand), transparent);
+  }
+
+  .timeline-item {
+    position: relative;
+    margin-bottom: 20px;
+    padding: 18px 20px;
+    background: white;
+    border-radius: 12px;
+    border: 1px solid rgba(200,184,154,0.25);
+  }
+
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -20px;
+    top: 22px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--rose);
+    border: 2px solid var(--cream);
+  }
+
+  .timeline-dose {
+    font-family: 'DM Mono', monospace;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--deep-rose);
+    margin-bottom: 4px;
+  }
+
+  .timeline-label {
+    font-size: 13px;
+    color: var(--light-mid);
+    margin-bottom: 8px;
+  }
+
+  .timeline-note {
+    font-size: 13px;
+    color: var(--mid);
+    line-height: 1.6;
+  }
+
+  .timeline-item.optional {
+    border-style: dashed;
+    opacity: 0.75;
+  }
+
+  .timeline-item.optional::before { background: var(--sand); }
+
+  /* ── DECISION FRAMEWORK ── */
+  .decision-card {
+    background: var(--charcoal);
+    border-radius: 16px;
+    padding: 30px 32px;
+    margin-top: 24px;
+    color: white;
+  }
+
+  .decision-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    color: var(--blush);
+    margin-bottom: 20px;
+    font-style: italic;
+  }
+
+  .decision-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .decision-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .step-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(201,120,106,0.2);
+    border: 1px solid rgba(201,120,106,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--rose);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .step-text {
+    font-size: 14px;
+    color: rgba(255,255,255,0.75);
+    line-height: 1.6;
+  }
+
+  .step-text strong { color: white; }
+
+  .increase-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background: rgba(122,158,126,0.15);
+    border: 1px solid rgba(122,158,126,0.3);
+    border-radius: 8px;
+    font-size: 13px;
+    color: var(--sage);
+  }
+
+  /* ── INFO BLOCKS ── */
+  .info-block {
+    border-radius: 14px;
+    padding: 22px 24px;
+    margin-bottom: 16px;
+  }
+
+  .info-block.green {
+    background: rgba(122,158,126,0.08);
+    border: 1px solid rgba(122,158,126,0.2);
+  }
+
+  .info-block.amber {
+    background: rgba(196,163,90,0.08);
+    border: 1px solid rgba(196,163,90,0.2);
+  }
+
+  .info-block.rose {
+    background: rgba(201,120,106,0.08);
+    border: 1px solid rgba(201,120,106,0.2);
+  }
+
+  .info-block.teal {
+    background: rgba(74,138,138,0.08);
+    border: 1px solid rgba(74,138,138,0.2);
+  }
+
+  .info-block-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .info-block.green .info-block-title { color: var(--deep-sage); }
+  .info-block.amber .info-block-title { color: #7a5a20; }
+  .info-block.rose .info-block-title { color: var(--deep-rose); }
+  .info-block.teal .info-block-title { color: var(--accent-teal); }
+
+  .info-block ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .info-block ul li {
+    font-size: 14px;
+    color: var(--mid);
+    padding-left: 20px;
+    position: relative;
+    line-height: 1.65;
+  }
+
+  .info-block ul li::before {
+    content: '·';
+    position: absolute;
+    left: 6px;
+    font-size: 16px;
+    line-height: 1.4;
+    color: var(--sand);
+  }
+
+  .info-block p {
+    font-size: 14px;
+    color: var(--mid);
+    line-height: 1.7;
+    margin-bottom: 0;
+  }
+
+  /* ── INJECTION TIPS ── */
+  .tips-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+    margin-top: 20px;
+  }
+
+  .tip-card {
+    background: white;
+    border-radius: 12px;
+    padding: 18px 20px;
+    border: 1px solid rgba(200,184,154,0.25);
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+
+  .tip-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .tip-text {
+    font-size: 13.5px;
+    color: var(--mid);
+    line-height: 1.6;
+  }
+
+  .tip-text strong {
+    display: block;
+    color: var(--charcoal);
+    font-size: 13px;
+    margin-bottom: 3px;
+    font-weight: 500;
+  }
+
+  /* ── SITES DIAGRAM ── */
+  .injection-sites {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .site-pill {
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-size: 13px;
+    background: white;
+    border: 1px solid rgba(200,184,154,0.35);
+    color: var(--mid);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .site-pill .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--rose);
+  }
+
+  .site-pill:nth-child(2) .dot { background: var(--accent-gold); }
+  .site-pill:nth-child(3) .dot { background: var(--sage); }
+  .site-pill:nth-child(4) .dot { background: var(--accent-teal); }
+
+  .rotation-note {
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--light-mid);
+    font-style: italic;
+  }
+
+  /* ── ELECTROLYTES ── */
+  .electrolyte-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  .electrolyte-pill {
+    padding: 8px 18px;
+    background: rgba(74,138,138,0.08);
+    border: 1px solid rgba(74,138,138,0.2);
+    border-radius: 20px;
+    font-size: 13px;
+    color: var(--accent-teal);
+  }
+
+  /* ── HALF LIFE CALLOUT ── */
+  .callout {
+    background: white;
+    border-radius: 16px;
+    padding: 24px 28px;
+    margin-top: 24px;
+    border: 1px solid rgba(200,184,154,0.3);
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+  }
+
+  .callout-icon {
+    font-size: 28px;
+    flex-shrink: 0;
+  }
+
+  .callout-body h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    color: var(--charcoal);
+    margin-bottom: 8px;
+  }
+
+  .callout-body p {
+    font-size: 14px;
+    color: var(--mid);
+    line-height: 1.7;
+    margin-bottom: 0;
+  }
+
+  .callout-body p strong { color: var(--charcoal); }
+
+  /* ── STORAGE TABLE ── */
+  .storage-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 20px;
+  }
+
+  @media (max-width: 500px) { .storage-grid { grid-template-columns: 1fr; } }
+
+  .storage-card {
+    background: white;
+    border-radius: 12px;
+    padding: 18px 20px;
+    border: 1px solid rgba(200,184,154,0.25);
+  }
+
+  .storage-card-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--light-mid);
+    margin-bottom: 10px;
+  }
+
+  .storage-card p {
+    font-size: 13.5px;
+    color: var(--mid);
+    line-height: 1.65;
+    margin-bottom: 0;
+  }
+
+  /* ── FAQ ── */
+  .faq-item {
+    border-bottom: 1px solid rgba(200,184,154,0.25);
+    padding: 20px 0;
+  }
+
+  .faq-item:last-child { border-bottom: none; }
+
+  .faq-q {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--charcoal);
+    margin-bottom: 10px;
+  }
+
+  .faq-a {
+    font-size: 14px;
+    color: var(--mid);
+    line-height: 1.75;
+  }
+
+  /* ── FOOTER ── */
+  .footer {
+    background: var(--charcoal);
+    padding: 40px;
+    text-align: center;
+    margin-top: 60px;
+  }
+
+  .footer p {
+    font-size: 12px;
+    color: rgba(255,255,255,0.35);
+    line-height: 1.7;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .footer .attr {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--rose);
+    margin-bottom: 14px;
+    letter-spacing: 0.1em;
+  }
+
+  /* ── PROGRESS VISUAL ── */
+  .dose-progress {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-top: 24px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+
+  .dose-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .dose-circle {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: white;
+    border: 2px solid var(--rose);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--deep-rose);
+  }
+
+  .dose-circle.optional {
+    border-color: var(--sand);
+    color: var(--light-mid);
+    border-style: dashed;
+  }
+
+  .dose-weeks {
+    font-size: 11px;
+    color: var(--light-mid);
+    margin-top: 6px;
+    white-space: nowrap;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .dose-connector {
+    flex: 1;
+    height: 2px;
+    background: linear-gradient(90deg, rgba(201,120,106,0.4), rgba(200,184,154,0.3));
+    min-width: 20px;
+    flex-shrink: 0;
+    margin-bottom: 22px;
+  }
+
+  .dose-connector.optional {
+    background: linear-gradient(90deg, rgba(200,184,154,0.3), rgba(200,184,154,0.15));
+    border-top: 1px dashed rgba(200,184,154,0.4);
+    height: 0;
+    border-width: 1px;
+  }
+
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-label">Beginner's Guide · @jkharve</div>
+    <h1>Tirzepatide<br><em>What you need to know</em></h1>
+    <p class="hero-sub">GLP-1 + GIP Dual Agonist · Weekly Injection · Evidence-Based</p>
+    <div class="hero-brands">
+      <span class="brand-tag diabetes">Mounjaro — Diabetes</span>
+      <span class="brand-tag weight">Zepbound — Weight Loss</span>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+
+  <div class="disclaimer">
+    <strong>Medical disclaimer:</strong> This guide is for educational purposes only and is not a substitute for professional medical advice. Always work with a licensed physician before starting, adjusting, or stopping tirzepatide. Individual responses vary significantly.
+  </div>
+
+  <!-- WHAT IS IT -->
+  <div class="section">
+    <div class="section-label">Section 01</div>
+    <h2>What is Tirzepatide?</h2>
+    <p>Tirzepatide is a molecule that simultaneously binds to both <strong>GLP-1 receptors</strong> and <strong>GIP receptors</strong> throughout your body. This dual action is what sets it apart from semaglutide (Ozempic/Wegovy), which only targets GLP-1 receptors — and why tirzepatide tends to produce more significant weight loss results.</p>
+    <p>It's prescribed as <strong>Mounjaro</strong> for type 2 diabetes management and <strong>Zepbound</strong> for weight loss. Both are the same molecule at the same doses — just different FDA-approved indications.</p>
+
+    <div class="mechanism-grid">
+      <div class="mech-card glp">
+        <div class="mech-title">GLP-1 Receptor Effects</div>
+        <ul>
+          <li>Pancreas releases more insulin in response to food</li>
+          <li>Stomach empties ~36 minutes slower on average</li>
+          <li>Small intestine takes hours longer to empty</li>
+          <li>Brain signals that contribute to feeling full</li>
+          <li>May slow neural degeneration (emerging research)</li>
+          <li>Also responsible for nausea side effects</li>
+        </ul>
+      </div>
+      <div class="mech-card gip">
+        <div class="mech-title">GIP Receptor Effects (Tirzepatide only)</div>
+        <ul>
+          <li>Releases additional insulin + improves insulin sensitivity</li>
+          <li>Actively <em>inhibits</em> the GLP-1-induced nausea pathway</li>
+          <li>Contributes to greater fat loss vs GLP-1 alone</li>
+          <li>May improve adipose tissue metabolism</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="vs-badge"><span>vs Semaglutide</span></div>
+    <div class="info-block teal">
+      <div class="info-block-title">Key Difference</div>
+      <p>Semaglutide (Ozempic/Wegovy) activates GLP-1 receptors only. Tirzepatide activates both GLP-1 and GIP — the GIP component adds insulin sensitivity benefits and, importantly, partially counteracts GLP-1-induced nausea. This is one reason many people tolerate tirzepatide's side effects better than expected.</p>
+    </div>
+  </div>
+
+  <!-- DOSING -->
+  <div class="section">
+    <div class="section-label">Section 02</div>
+    <h2>Dosing & Titration</h2>
+    <p>Tirzepatide is injected <strong>once per week</strong> into a fat deposit. The protocol starts low and moves up gradually — this is called <em>titration</em>, and it's critical to allow your body to adjust and to find your personal optimal dose. Don't rush it.</p>
+
+    <div class="callout">
+      <div class="callout-icon">⏱</div>
+      <div class="callout-body">
+        <h4>Half-Life: 5 Days</h4>
+        <p>Because tirzepatide has a <strong>5-day half-life</strong>, it accumulates in your body above the dose you inject. For example, after 4 weekly injections of 2.5 mg, you'll actually peak at about <strong>~3 mg</strong> in your system. The <strong>Shotsy app</strong> (free, iOS & Android) is excellent for visualizing your estimated drug levels over time.</p>
+      </div>
+    </div>
+
+    <div class="dose-progress">
+      <div class="dose-node">
+        <div class="dose-circle">2.5mg</div>
+        <div class="dose-weeks">Weeks 1–4</div>
+      </div>
+      <div class="dose-connector"></div>
+      <div class="dose-node">
+        <div class="dose-circle">5mg</div>
+        <div class="dose-weeks">Weeks 5–8</div>
+      </div>
+      <div class="dose-connector"></div>
+      <div class="dose-node">
+        <div class="dose-circle optional">7.5mg</div>
+        <div class="dose-weeks">Optional</div>
+      </div>
+      <div class="dose-connector optional"></div>
+      <div class="dose-node">
+        <div class="dose-circle optional">10mg</div>
+        <div class="dose-weeks">Optional</div>
+      </div>
+      <div class="dose-connector optional"></div>
+      <div class="dose-node">
+        <div class="dose-circle optional">12.5mg</div>
+        <div class="dose-weeks">Optional</div>
+      </div>
+      <div class="dose-connector optional"></div>
+      <div class="dose-node">
+        <div class="dose-circle optional">15mg</div>
+        <div class="dose-weeks">Max dose</div>
+      </div>
+    </div>
+
+    <div class="info-block amber" style="margin-top: 20px;">
+      <div class="info-block-title">Important Notes on Titration</div>
+      <ul>
+        <li>Standard protocol: start 2.5 mg × 4 weeks, then decide whether to increase by 2.5 mg each step</li>
+        <li>You do not have to reach a higher dose — some people achieve full results at 2.5–5 mg</li>
+        <li>It's also typical to titrate <em>down</em> to a lower dose before stopping entirely — don't stop abruptly</li>
+        <li>Average weight loss is 0.5–2 pounds per week — this is a long-term project, not a sprint</li>
+        <li>Healthy weight loss is generally no more than 1% of body weight per week</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SHOULD I INCREASE -->
+  <div class="section">
+    <div class="section-label">Section 03</div>
+    <h2>Should I Increase My Dose?</h2>
+    <p>This framework is specifically for people using tirzepatide for weight loss. It's a useful starting point — but always make these decisions with your prescribing physician, not unilaterally.</p>
+
+    <div class="decision-card">
+      <h3>Ask yourself all four questions:</h3>
+      <div class="decision-steps">
+        <div class="decision-step">
+          <div class="step-num">1</div>
+          <div class="step-text"><strong>Do I still have weight to lose?</strong><br>If you've reached your goal, there may be no reason to increase — maintenance protocols exist.</div>
+        </div>
+        <div class="decision-step">
+          <div class="step-num">2</div>
+          <div class="step-text"><strong>Have I taken at least 4 shots at this dose?</strong><br>Your body needs time to reach steady state at a new dose before you can accurately assess its effect. Don't judge a dose before 4 weeks.</div>
+        </div>
+        <div class="decision-step">
+          <div class="step-num">3</div>
+          <div class="step-text"><strong>Are my side effects manageable?</strong><br>Increasing dose while already struggling with nausea, fatigue, or GI symptoms will usually make things worse. Stabilize first.</div>
+        </div>
+        <div class="decision-step">
+          <div class="step-num">4</div>
+          <div class="step-text"><strong>Have I lost less than 2 lbs over the past 2 weeks?</strong><br>(Or less than 1% of body weight over 2 weeks?) If weight loss has stalled, a dose increase may help restart progress.</div>
+        </div>
+      </div>
+      <div class="increase-badge">
+        ✅ All four yes → consider increasing
+      </div>
+    </div>
+  </div>
+
+  <!-- INJECTION GUIDE -->
+  <div class="section">
+    <div class="section-label">Section 04</div>
+    <h2>How to Inject</h2>
+    <p>Tirzepatide is injected subcutaneously — just under the skin, into a fat deposit. It's a small needle and most people find it straightforward after the first few times.</p>
+
+    <div class="tips-grid">
+      <div class="tip-card">
+        <div class="tip-icon">🧴</div>
+        <div class="tip-text">
+          <strong>Keep it sterile</strong>
+          Wipe the top of the vial with an alcohol pad before drawing. Never store medication in a syringe between uses. Never reuse a syringe.
+        </div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">💉</div>
+        <div class="tip-text">
+          <strong>Two vials, two syringes</strong>
+          If you need to draw from two separate vials to get your dose, use two separate syringes — one per vial.
+        </div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">🌬️</div>
+        <div class="tip-text">
+          <strong>Breathe through it</strong>
+          Breathe in, then inject as you breathe out. This simple technique significantly reduces the sensation of the injection.
+        </div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">📐</div>
+        <div class="tip-text">
+          <strong>Double-check your dose</strong>
+          Compounded tirzepatide especially — concentration, volume, units, and dose are easy to confuse. Use a dosing calculator at <strong>fatscientist.com</strong>.
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 28px;">
+      <div class="section-label">Rotation Schedule</div>
+      <div class="injection-sites">
+        <div class="site-pill"><div class="dot"></div>Left abdomen</div>
+        <div class="site-pill"><div class="dot"></div>Right abdomen</div>
+        <div class="site-pill"><div class="dot"></div>Back of left arm</div>
+        <div class="site-pill"><div class="dot"></div>Back of right arm</div>
+      </div>
+      <p class="rotation-note">→ Rotate weekly. After all four sites, return to left abdomen. Never inject into the same spot two weeks in a row — rotating prevents tissue buildup and scarring.</p>
+    </div>
+  </div>
+
+  <!-- STORAGE & TRAVEL -->
+  <div class="section">
+    <div class="section-label">Section 05</div>
+    <h2>Storage & Travel</h2>
+
+    <div class="storage-grid">
+      <div class="storage-card">
+        <div class="storage-card-title">At Home</div>
+        <p>Store pens and vials in the refrigerator. Do <strong>not</strong> store syringes in the fridge — condensation can contaminate them. Keep at room temperature, away from light.</p>
+      </div>
+      <div class="storage-card">
+        <div class="storage-card-title">Flying / Travel</div>
+        <p>Pack medication in your <strong>carry-on</strong> — never checked luggage. Bring your prescription. Travel cases with ice packs are available for full vials. Pre-drawn syringes are stable at room temperature for <strong>21 days</strong> (keep below 86°F / 30°C).</p>
+      </div>
+      <div class="storage-card">
+        <div class="storage-card-title">Temperature</div>
+        <p>Never freeze. Never leave in a hot car. Once opened or reconstituted (compounded), check your pharmacy's specific guidelines — typically 28–30 days refrigerated.</p>
+      </div>
+      <div class="storage-card">
+        <div class="storage-card-title">Syringes</div>
+        <p>Dispose of used syringes in a sharps container. Never throw loose needles in the trash. Many pharmacies offer sharps disposal.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- HYDRATION -->
+  <div class="section">
+    <div class="section-label">Section 06</div>
+    <h2>Hydration & Electrolytes</h2>
+    <p>Tirzepatide acts as a <strong>diuretic</strong> for most people. Combined with eating less food (and therefore less sodium), many people quickly enter a cycle where drinking plain water is actually making dehydration worse — because you need water in balance with sodium, potassium, and magnesium.</p>
+
+    <div class="info-block rose">
+      <div class="info-block-title">Signs You're Electrolyte Deficient</div>
+      <ul>
+        <li>Muscle cramps — especially legs and feet</li>
+        <li>Persistent fatigue despite adequate sleep</li>
+        <li>Headaches that don't respond to water alone</li>
+        <li>Brain fog or difficulty concentrating</li>
+        <li>Heart palpitations (seek medical attention if severe)</li>
+      </ul>
+    </div>
+
+    <div class="info-block green" style="margin-top: 16px;">
+      <div class="info-block-title">Solutions That Work</div>
+      <div class="electrolyte-row">
+        <span class="electrolyte-pill">🥥 Coconut water</span>
+        <span class="electrolyte-pill">🍖 Bone broth</span>
+        <span class="electrolyte-pill">🍋 Lemon water + salt</span>
+        <span class="electrolyte-pill">⚡ Electrolyte supplements (LMNT, Liquid IV, etc.)</span>
+      </div>
+      <p style="margin-top: 14px; font-size: 14px; color: var(--mid);">Stock these <em>before</em> you start, not after symptoms appear. Many people wish they had done this from day one.</p>
+    </div>
+  </div>
+
+  <!-- MUSCLE MASS -->
+  <div class="section">
+    <div class="section-label">Section 07</div>
+    <h2>Protecting Muscle Mass</h2>
+    <p>This is arguably the most important section. <strong>All significant caloric restriction causes some muscle loss</strong> — tirzepatide is no different, and because appetite suppression can be aggressive, the risk is real. Muscle loss is invisible on the scale (it looks like weight loss) but harmful to your metabolism long-term.</p>
+
+    <div class="info-block green">
+      <div class="info-block-title">What Actually Works</div>
+      <ul>
+        <li><strong>Protein:</strong> Target 1g per pound of lean body mass daily — non-negotiable. When you're not hungry, protein shakes become essential tools, not optional</li>
+        <li><strong>Strength training:</strong> 3–4x per week minimum. Resistance training is the most powerful signal to your body to preserve muscle while in a caloric deficit</li>
+        <li><strong>Adequate calories:</strong> Extreme restriction accelerates muscle loss. Aim for a moderate deficit, not starvation</li>
+        <li><strong>Track protein obsessively:</strong> Not forever — but while adapting to the medication, tracking ensures you're hitting your target on low-appetite days</li>
+      </ul>
+    </div>
+
+    <div class="info-block amber" style="margin-top: 16px;">
+      <div class="info-block-title">Hair Loss Note</div>
+      <p>Hair loss can occur as a side effect of <em>rapid weight loss</em> — it's called telogen effluvium and is a physiological response to caloric stress, not the medication itself. Adequate protein intake is the primary lever within your control to minimize it. It is typically temporary and resolves as weight loss slows.</p>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="section">
+    <div class="section-label">Section 08</div>
+    <h2>Common Questions</h2>
+
+    <div class="faq-item">
+      <div class="faq-q">What if I miss a dose?</div>
+      <div class="faq-a">If it's within 4 days of your missed dose, take it as soon as you remember and restart your weekly schedule from that day. If more than 4 days have passed, skip it and wait for your next scheduled dose. Never double-dose.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">How long until I see results?</div>
+      <div class="faq-a">Most people notice appetite changes within the first 1–2 weeks. Meaningful weight loss typically becomes visible over 4–12 weeks. The medication works best as a long-term protocol — average loss is 0.5–2 lbs per week, with total weight loss in trials averaging 15–22% of body weight over 72 weeks.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">Can I drink alcohol?</div>
+      <div class="faq-a">Alcohol is not contraindicated, but tirzepatide slows gastric emptying which can intensify alcohol's effects. Many people find their alcohol tolerance changes significantly. Use extra caution, especially early in treatment.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">What's the difference between brand-name and compounded?</div>
+      <div class="faq-a">Brand-name (Mounjaro/Zepbound) is manufactured to strict FDA standards as pre-filled pens. Compounded tirzepatide is mixed at a pharmacy, typically comes in vials, and requires you to draw your own dose. Compounded is often significantly cheaper but requires careful attention to concentration and dosing calculations — always use a dosing calculator.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">What happens when I stop taking it?</div>
+      <div class="faq-a">Weight regain is common if no lifestyle changes have been established during treatment. This is not a personal failure — it reflects the underlying biology of obesity and appetite regulation. The most successful outcomes come from using the medication to build sustainable habits around food, protein, and movement that persist after discontinuation. Always titrate down gradually rather than stopping abruptly.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">Can I use this alongside other peptides?</div>
+      <div class="faq-a">Some practitioners combine tirzepatide with CJC-1295/Ipamorelin to offset muscle loss, and BPC-157 for joint support as new physical activity increases. Always discuss any combinations with your prescribing physician — drug interactions and overlapping metabolic effects need to be managed carefully.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="attr">@jkharve · Peptide Education Series</div>
+  <p>This guide is for informational and educational purposes only. It does not constitute medical advice and should not replace a consultation with a licensed healthcare provider. Tirzepatide is a prescription medication — obtain it only through a licensed physician and pharmacy.</p>
+</div>
+
+</body>
+</html>

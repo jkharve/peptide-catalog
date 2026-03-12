@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Peptide Pricing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@200;300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bone: #F5F2ED;
+    --warm-white: #FAF8F5;
+    --ash: #E8E4DE;
+    --stone: #C4BDB4;
+    --slate: #8A8278;
+    --charcoal: #3A3530;
+    --ink: #1C1A17;
+    --gold: #B8A882;
+    --gold-light: #D4C9A8;
+    --accent: #7A6E5F;
+    --green: #5A7A5F;
+    --green-bg: #F0F5F0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--warm-white); color: var(--ink); font-family: 'Jost', sans-serif; font-weight: 300; overflow-x: hidden; }
+
+  /* HERO */
+  .hero {
+    background: var(--ink);
+    padding: 90px 80px 70px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 50% 100% at 90% 50%, rgba(184,168,130,0.10) 0%, transparent 60%),
+      radial-gradient(ellipse 30% 60% at 5% 90%, rgba(184,168,130,0.06) 0%, transparent 50%);
+  }
+  .hero-inner { position: relative; z-index: 2; max-width: 700px; }
+  .hero-eyebrow {
+    font-family: 'Jost', sans-serif; font-weight: 200;
+    font-size: 10px; letter-spacing: 0.35em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 28px; display: block;
+  }
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif; font-weight: 300;
+    font-size: clamp(44px, 6vw, 88px); line-height: 0.92;
+    color: var(--bone); margin-bottom: 32px;
+  }
+  .hero-title em { font-style: italic; color: var(--gold-light); }
+  .hero-rule { width: 48px; height: 1px; background: var(--gold); margin-bottom: 24px; }
+  .hero-sub {
+    font-size: 13px; font-weight: 300; color: var(--stone);
+    line-height: 1.75; max-width: 480px;
+  }
+
+  /* FULFILLMENT LEGEND */
+  .legend {
+    background: var(--bone);
+    border-bottom: 1px solid var(--ash);
+    padding: 20px 80px;
+    display: flex; align-items: center; gap: 40px;
+    flex-wrap: wrap;
+  }
+  .legend-label {
+    font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--stone); white-space: nowrap;
+  }
+  .legend-items { display: flex; gap: 32px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 10px; }
+  .dot {
+    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  }
+  .dot-green { background: var(--green); }
+  .dot-gold { background: var(--gold); }
+  .legend-text { font-size: 11px; color: var(--charcoal); letter-spacing: 0.05em; }
+
+  /* GRID */
+  .grid-wrap { padding: 64px 80px 80px; }
+  .grid-header {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin-bottom: 40px; padding-bottom: 20px;
+    border-bottom: 1px solid var(--ash);
+  }
+  .grid-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 36px; font-weight: 300;
+  }
+  .grid-title em { font-style: italic; color: var(--gold); }
+  .grid-count {
+    font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--stone);
+  }
+
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 2px;
+  }
+
+  /* CARD */
+  .card {
+    background: var(--warm-white);
+    border: 1px solid var(--ash);
+    padding: 36px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s, transform 0.3s;
+    display: flex; flex-direction: column;
+  }
+  .card::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 2px;
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .card.in-stock::before { background: linear-gradient(90deg, var(--green), transparent); }
+  .card.pre-order::before { background: linear-gradient(90deg, var(--gold), transparent); }
+  .card:hover { border-color: var(--gold-light); transform: translateY(-2px); }
+  .card:hover::before { opacity: 1; }
+
+  /* STATUS BADGE */
+  .status {
+    display: inline-flex; align-items: center; gap: 7px;
+    margin-bottom: 20px; align-self: flex-start;
+  }
+  .status-dot {
+    width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+  }
+  .status-dot-green { background: var(--green); }
+  .status-dot-gold { background: var(--gold); }
+  .status-text {
+    font-size: 9px; letter-spacing: 0.25em; text-transform: uppercase;
+  }
+  .status-text-green { color: var(--green); }
+  .status-text-gold { color: var(--gold); }
+
+  .card-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 30px; font-weight: 400; line-height: 1.05;
+    margin-bottom: 4px;
+  }
+  .card-spec {
+    font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--slate); margin-bottom: 18px; display: block;
+  }
+  .card-rule { height: 1px; background: var(--ash); margin-bottom: 18px; }
+
+  .card-admin {
+    display: inline-flex; align-items: center; gap: 6px;
+    margin-bottom: 14px;
+  }
+  .admin-icon {
+    width: 14px; height: 14px; opacity: 0.45; flex-shrink: 0;
+  }
+  .admin-label {
+    font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--slate);
+  }
+
+  .card-desc {
+    font-size: 12.5px; line-height: 1.75; color: var(--charcoal);
+    flex: 1; margin-bottom: 28px;
+  }
+
+  .card-footer {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    border-top: 1px solid var(--ash); padding-top: 20px; margin-top: auto;
+  }
+  .card-price {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 36px; font-weight: 300; line-height: 1;
+  }
+  .card-price-sub {
+    font-size: 10px; font-family: 'Jost', sans-serif;
+    color: var(--slate); letter-spacing: 0.1em;
+    display: block; margin-top: 4px;
+  }
+  .card-fulfillment {
+    text-align: right;
+  }
+  .fulfillment-label {
+    font-size: 8px; letter-spacing: 0.25em; text-transform: uppercase;
+    color: var(--stone); display: block; margin-bottom: 4px;
+  }
+  .fulfillment-time {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px; font-weight: 300;
+  }
+  .fulfillment-time.green { color: var(--green); }
+  .fulfillment-time.gold { color: var(--gold); }
+
+  /* FOOTER */
+  footer {
+    background: var(--ink); color: var(--stone);
+    padding: 52px 80px;
+    display: flex; justify-content: space-between; align-items: flex-end;
+    flex-wrap: wrap; gap: 32px;
+  }
+  .footer-note {
+    font-size: 11px; line-height: 1.75; max-width: 560px;
+  }
+  .footer-note strong {
+    display: block; font-weight: 400;
+    font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 8px;
+  }
+  .footer-tag {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 40px; font-weight: 300;
+    color: var(--gold); line-height: 1;
+  }
+
+  /* REVEAL */
+  .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .reveal.visible { opacity: 1; transform: none; }
+
+  @media (max-width: 768px) {
+    .hero, .legend, .grid-wrap, footer { padding-left: 24px; padding-right: 24px; }
+    .pricing-grid { grid-template-columns: 1fr; }
+    .legend { gap: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-inner">
+    <span class="hero-eyebrow">Current Offerings — Pricing &amp; Availability</span>
+    <h1 class="hero-title">Peptide<br><em>Price</em><br>Guide</h1>
+    <div class="hero-rule"></div>
+    <p class="hero-sub">Eight curated compounds available for pickup or delivery. All formulations are subcutaneous injectable unless otherwise noted. Pricing is per vial.</p>
+  </div>
+</section>
+
+<!-- LEGEND -->
+<div class="legend">
+  <span class="legend-label">Availability Key</span>
+  <div class="legend-items">
+    <div class="legend-item">
+      <div class="dot dot-green"></div>
+      <span class="legend-text">In Stock — Pickup or delivery within 7 days</span>
+    </div>
+    <div class="legend-item">
+      <div class="dot dot-gold"></div>
+      <span class="legend-text">Order Required — Available within 2 weeks</span>
+    </div>
+  </div>
+</div>
+
+<!-- GRID -->
+<div class="grid-wrap">
+  <div class="grid-header reveal">
+    <h2 class="grid-title">Available <em>Compounds</em></h2>
+    <span class="grid-count">13 Peptides</span>
+  </div>
+
+  <div class="pricing-grid">
+
+    <!-- Tirzepatide — IN STOCK -->
+    <div class="card in-stock reveal">
+      <div class="status">
+        <div class="status-dot status-dot-green"></div>
+        <span class="status-text status-text-green">In Stock</span>
+      </div>
+      <h3 class="card-name">Tirzepatide</h3>
+      <span class="card-spec">20mg per vial · Subcutaneous</span>
+      <div class="card-rule"></div>
+      <p class="card-desc">A dual GIP and GLP-1 receptor agonist that suppresses appetite and slows gastric emptying. Clinically shown to produce significant, sustained weight loss while improving insulin sensitivity and metabolic markers. Administered once weekly.</p>
+      <div class="card-footer">
+        <div>
+          <div class="card-price">$99</div>
+          <span class="card-price-sub">per vial</span>
+        </div>
+        <div class="card-fulfillment">
+          <span class="fulfillment-label">Ready In</span>
+          <div class="fulfillment-time green">7 days or less</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GHK-Cu — IN STOCK -->
+    <div class="card in-stock reveal">
+      <div class="status">
+        <div class="status-dot status-dot-green"></div>
+        <span class="status-text status-text-green">In Stock</span>
+      </div>
+      <h3 class="card-name">GHK-Cu</h3>
+      <span class="card-spec">100mg per vial · Subcutaneous</span>
+      <div class="card-rule"></div>
+      <p class="card-desc">A naturally occurring copper tripeptide that stimulates collagen synthesis, supports skin regeneration, and activates the body's antioxidant defenses. Widely used for skin health, hair follicle support, and wound healing. Levels naturally decline with age.</p>
+      <div class="card-footer">
+        <div>
+          <div class="card-price">$45</div>
+          <span class="card-price-sub">per vial</span>
+        </div>
+        <div class="card-fulfillment">
+          <span class="fulfillment-label">Ready In</span>
+          <div class="fulfillment-time green">7 days or less</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GLOW — ORDER REQUIRED -->
+    <div class="card pre-order reveal">
+      <div class="status">
+        <div class="status-dot status-dot-gold"></div>
+        <span class="status-text status-text-gold">Order Required</span>
+      </div>
+      <h3 class="card-name">GLOW</h3>
+      <span class="card-spec">70mg per vial · Subcutaneous</span>
+      <div class="card-rule"></div>
+      <p class="card-desc">A comprehensive beauty blend combining GHK-Cu, BPC-157, and TB-500 in a single formulation. Targets skin radiance, collagen repair, and cellular regeneration simultaneously. Designed for those seeking visible skin quality improvements alongside systemic healing support.</p>
+      <div class="card-footer">
+        <div>
+          <div class="card-price">$125</div>
+          <span class="card-price-sub">per vial</span>
+        </div>
+        <div class="card-fulfillment">
+          <span class="fulfillment-label">Ready In</span>
+          <div class="fulfillment-time gold">2 weeks</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sermorelin — IN STOCK -->
+    <div class="card in-stock reveal">
+      <div class="status">
+        <div class="status-dot status-dot-green"></div>
+        <span class="status-text status-text-green">In Stock</span>
+      </div>
+      <h3 class="card-name">Sermorelin</h3>
+      <span class="card-spec">5mg per vial · Subcutaneous</span>
+      <div class="card-rule"></div>
+      <p class="card-desc">A growth hormone releasing hormone analog that stimulates the pituitary gland to produce natural GH. Supports lean muscle development, fat metabolism, improved sleep quality, and skin elasticity. A well-tolerated alternative to exogenous HGH. Best administered at bedtime.</p>
+      <div class="card-footer">
+        <div>
+          <div class="card-price">$110</div>
+          <span class="card-price-sub">per vial</span>
+        </div>
+        <div class="card-fulfillment">
+          <span class="fulfillment-label">Ready In</span>
+          <div class="fulfillment-time green">7 days or less</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tesamorelin — IN STOCK -->
+    <div class="card in-stock reveal">
+      <div class="status">
+        <div class="status-dot status-dot-green"></div>
+        <span class="status-text status-text-green">In Stock</span>
+      </div>
+      <h3 class="card-name">Tesamorelin</h3>
+      <span class="card-spec">10mg per vial · Subcutaneous</span>
+      <div class="card-rule"></div>
+      <p class="card-desc">A potent synthetic GHRH analog that stimulates GH secretion with a particular affinity for reducing visceral adipose tissue. FDA-approved for abdominal fat reduction. Also studied for cognitive benefits and metabolic improvements in aging populations. Administered once daily.</p>
+      <div class="card-footer">
+        <div>
+          <div class="card-price">$150</div>
+          <span class="card-price-sub">per vial</span>
+        </div>
+        <div class="card-fulfillment">
+          <span class="fulfillment-label">Ready In</span>
+          <div class="fulfillment-time green">7 days or less</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Semax — IN STOCK -->
+    <div class="card in-stock reveal">
+      <div class="status">
+        <div class="status-dot status-dot-green"></div>
+        <span class="status-text status-text-green">In Stock</span>
+      </div>
+      <h3 class="card-name">Semax</h3>
+      <span class="card-spec">5mg per vial · Nasal Spray</span>
+      <div class="card-rule"></div>
+      <p class="card-desc">A synthetic neuropeptide that enhances BDNF production and improves dopaminergic neurotransmission. Used for cognitive clarity, focus, memory, and stress resilience. Administered as a nasal spray for rapid CNS absorption. A leading nootropic with a well-established safety record.</p>
+      <div class="card-footer">
+        <div>
+          <div class="card-price">$65</div>
+          <span class="card-price-sub">per vial</span>
+        </div>
+        <div class="card-fulfillment">
+          <span class="fulfillment-label">Ready In</span>
+          <div class="fulfillment-time green">7 days or less</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Melanotan 2 — ORDER REQUIRED -->
+    <div class="card pre-order reveal">
+      <div class="status">
+        <div class="status-dot status-dot-gold"></div>
+        <span class="status-text status-text-gold">Order Required</span>
+      </div>
+      <h3 class="card-name">Melanotan 2</h3>
+      <span class="card-spec">10mg per vial · Subcutaneous</span>
+      <div class="card-rule"></div>
+      <p class="card-desc">A synthetic analog of alpha-MSH that stimulates melanin production to produce a natural-looking tan without UV exposure. Also associated with appetite suppression and libido enhancement as secondary effects. Used cosmetically to deepen and maintain skin pigmentation.</p>
+      <div class="card-footer">
+        <div>
+          <div class="card-price">$38</div>
+          <span class="card-price-sub">per vial</span>
+        </div>
+        <div class="card-fulfillment">
+          <span class="fulfillment-label">Ready In</span>
+          <div class="fulfillment-time gold">2 weeks</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NAD+ — IN STOCK -->
+    <div class="card in-stock reveal">
+      <div class="status">
+        <div class="status-dot status-dot-green"></div>
+        <span class="status-text status-text-green">In Stock</span>
+      </div>
+      <h3 class="card-name">NAD+</h3>
+      <span class="card-spec">1000mg per vial · Subcutaneous</span>
+      <div class="card-rule"></div>
+      <p class="card-desc">Nicotinamide adenine dinucleotide — a coenzyme essential to cellular energy production, DNA repair, and sirtuin activation. NAD+ levels decline significantly with age. Injectable delivery bypasses low oral bioavailability, providing direct support for energy, metabolism, and cognitive function.</p>
+      <div class="card-footer">
+        <div>
+          <div class="card-price">$125</div>
+          <span class="card-price-sub">per vial</span>
+        </div>
+        <div class="card-fulfillment">
+          <span class="fulfillment-label">Ready In</span>
+          <div class="fulfillment-time green">7 days or less</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MOTS-c — ORDER REQUIRED -->
+    <div class="card pre-order reveal">
+      <div class="status">
+        <div class="status-dot status-dot-gold"></div>
+        <span class="status-text status-text-gold">Order Required</span>
+      </div>
+      <h3 class="card-name">MOTS-c</h3>
+      <span class="card-spec">10mg per vial · Subcutaneous</span>
+      <div class="card-rule"></div>
+      <p class="card-desc">A mitochondria-derived peptide that activates AMPK signaling to regulate metabolic homeostasis. Improves insulin sensitivity, endurance capacity, and mitochondrial efficiency. Studied for its ability to reverse age-related metabolic decline and support healthy body composition.</p>
+      <div class="card-footer">
+        <div>
+          <div class="card-price">$60</div>
+          <span class="card-price-sub">per vial</span>
+        </div>
+        <div class="card-fulfillment">
+          <span class="fulfillment-label">Ready In</span>
+          <div class="fulfillment-time gold">2 weeks</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Epithalon — ORDER REQUIRED -->
+    <div class="card pre-order reveal">
+      <div class="status">
+        <div class="status-dot status-dot-gold"></div>
+        <span class="status-text status-text-gold">Order Required</span>
+      </div>
+      <h3 class="card-name">Epithalon</h3>
+      <span class="card-spec">10mg per vial · Subcutaneous</span>
+      <div class="card-rule"></div>
+      <p class="card-desc">A synthetic tetrapeptide derived from the pineal gland that activates telomerase — the enzyme responsible for maintaining telomere length. Associated with cellular longevity, improved skin texture, and regulation of circadian rhythms. One of the most studied anti-aging peptides available.</p>
+      <div class="card-footer">
+        <div>
+          <div class="card-price">$45</div>
+          <span class="card-price-sub">per vial</span>
+        </div>
+        <div class="card-fulfillment">
+          <span class="fulfillment-label">Ready In</span>
+          <div class="fulfillment-time gold">2 weeks</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CJC-1295 / Ipamorelin — ORDER REQUIRED -->
+    <div class="card pre-order reveal">
+      <div class="status">
+        <div class="status-dot status-dot-gold"></div>
+        <span class="status-text status-text-gold">Order Required</span>
+      </div>
+      <h3 class="card-name">CJC-1295 / Ipamorelin</h3>
+      <span class="card-spec">10mg per vial · Subcutaneous</span>
+      <div class="card-rule"></div>
+      <p class="card-desc">A synergistic blend of a GHRH analog and a selective growth hormone secretagogue. Together they produce a robust, pulsatile GH release that supports fat loss, lean muscle development, improved sleep quality, and metabolic rate. A foundational stack for GH optimization.</p>
+      <div class="card-footer">
+        <div>
+          <div class="card-price">$85</div>
+          <span class="card-price-sub">per vial</span>
+        </div>
+        <div class="card-fulfillment">
+          <span class="fulfillment-label">Ready In</span>
+          <div class="fulfillment-time gold">2 weeks</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Retatrutide — ORDER REQUIRED -->
+    <div class="card pre-order reveal">
+      <div class="status">
+        <div class="status-dot status-dot-gold"></div>
+        <span class="status-text status-text-gold">Order Required</span>
+      </div>
+      <h3 class="card-name">Retatrutide</h3>
+      <span class="card-spec">10mg per vial · Subcutaneous</span>
+      <div class="card-rule"></div>
+      <p class="card-desc">A next-generation triple agonist targeting GLP-1, GIP, and glucagon receptors simultaneously. Early trials have demonstrated exceptional weight loss outcomes alongside broad improvements across multiple metabolic markers. Positioned as among the most potent metabolic peptides in current research.</p>
+      <div class="card-footer">
+        <div>
+          <div class="card-price">$99</div>
+          <span class="card-price-sub">per vial</span>
+        </div>
+        <div class="card-fulfillment">
+          <span class="fulfillment-label">Ready In</span>
+          <div class="fulfillment-time gold">2 weeks</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Selank — ORDER REQUIRED -->
+    <div class="card pre-order reveal">
+      <div class="status">
+        <div class="status-dot status-dot-gold"></div>
+        <span class="status-text status-text-gold">Order Required</span>
+      </div>
+      <h3 class="card-name">Selank</h3>
+      <span class="card-spec">10mg per vial · Nasal Spray</span>
+      <div class="card-rule"></div>
+      <p class="card-desc">A synthetic analog of the immunomodulatory peptide tuftsin that reduces anxiety and stress without sedation or dependency. Supports immune function alongside cognitive performance. Administered intranasally for rapid absorption. Widely used as a nootropic and adaptogen with an excellent safety profile.</p>
+      <div class="card-footer">
+        <div>
+          <div class="card-price">$75</div>
+          <span class="card-price-sub">per vial</span>
+        </div>
+        <div class="card-fulfillment">
+          <span class="fulfillment-label">Ready In</span>
+          <div class="fulfillment-time gold">2 weeks</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-note">
+    <strong>Important Notice</strong>
+    These compounds are intended for use under appropriate medical supervision. All products are research-grade. Descriptions are for informational purposes only and do not constitute medical advice. Availability subject to change — contact us to confirm current stock before ordering.
+  </div>
+  <div class="footer-tag">13<br><span style="font-size:14px; font-family:'Jost',sans-serif; font-weight:200; letter-spacing:0.2em; text-transform:uppercase; color:var(--slate);">Compounds</span></div>
+</footer>
+
+<script>
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), 60 * (i % 5));
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.06, rootMargin: '0px 0px -30px 0px' });
+  reveals.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

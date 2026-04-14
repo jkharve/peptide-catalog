@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Peptide Catalog</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0e0e;
+    --surface: #161616;
+    --surface2: #1e1e1e;
+    --border: rgba(255,255,255,0.07);
+    --border-accent: rgba(180,148,90,0.35);
+    --brass: #b4945a;
+    --brass-light: #d4b47a;
+    --brass-dim: rgba(180,148,90,0.15);
+    --text-primary: #f0ece4;
+    --text-secondary: #9a9488;
+    --text-dim: #5a5650;
+    --white: #ffffff;
+    --tag-bg: rgba(180,148,90,0.1);
+    --inject-bg: #141414;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* NOISE TEXTURE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  /* NAV */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(14,14,14,0.92);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 4rem;
+  }
+
+  .nav-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+  }
+
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--brass);
+    text-decoration: none;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--brass-light); }
+
+  /* HERO */
+  .hero {
+    position: relative;
+    min-height: 92vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 6rem 4rem;
+  }
+
+  .hero-grid-bg {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(180,148,90,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(180,148,90,0.04) 1px, transparent 1px);
+    background-size: 80px 80px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%);
+  }
+
+  .hero-glow {
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(180,148,90,0.06) 0%, transparent 70%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .hero-content {
+    position: relative;
+    text-align: center;
+    max-width: 900px;
+    z-index: 1;
+  }
+
+  .hero-eyebrow {
+    font-size: 0.65rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--brass);
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  .hero-eyebrow::before, .hero-eyebrow::after {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 1px;
+    background: var(--brass);
+    opacity: 0.5;
+  }
+
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(3.5rem, 8vw, 7rem);
+    font-weight: 300;
+    line-height: 0.95;
+    letter-spacing: -0.01em;
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: var(--brass-light);
+  }
+
+  .hero-sub {
+    font-size: 0.85rem;
+    letter-spacing: 0.12em;
+    color: var(--text-secondary);
+    max-width: 560px;
+    margin: 0 auto 3.5rem;
+    line-height: 1.9;
+  }
+
+  .hero-disclaimer {
+    display: inline-block;
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+    padding: 0.6rem 1.4rem;
+    border-radius: 2px;
+  }
+
+  .hero-scroll-hint {
+    position: absolute;
+    bottom: 2.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-dim);
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .scroll-line {
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, var(--brass), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.3; transform: scaleY(0.8); }
+    50% { opacity: 1; transform: scaleY(1); }
+  }
+
+  /* CATEGORY SECTIONS */
+  .catalog-wrap {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 4rem 8rem;
+  }
+
+  .category-block {
+    margin-bottom: 7rem;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .category-header {
+    display: flex;
+    align-items: flex-end;
+    gap: 2rem;
+    margin-bottom: 3rem;
+    padding-bottom: 1.2rem;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+
+  .category-header::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 80px;
+    height: 1px;
+    background: var(--brass);
+  }
+
+  .category-number {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--brass);
+    letter-spacing: 0.1em;
+    padding-bottom: 4px;
+  }
+
+  .category-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.2rem;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    color: var(--text-primary);
+    line-height: 1;
+  }
+
+  .category-desc {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    padding-bottom: 5px;
+    margin-left: auto;
+    max-width: 280px;
+    text-align: right;
+    line-height: 1.6;
+  }
+
+  /* PEPTIDE GRID */
+  .peptide-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 1.5px;
+  }
+
+  .peptide-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 2.2rem 2.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s, background 0.3s;
+    cursor: default;
+  }
+
+  .peptide-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--brass), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .peptide-card:hover {
+    background: var(--surface2);
+    border-color: var(--border-accent);
+  }
+
+  .peptide-card:hover::before {
+    opacity: 1;
+  }
+
+  .card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    gap: 1rem;
+  }
+
+  .peptide-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    color: var(--text-primary);
+    line-height: 1.1;
+  }
+
+  .peptide-format {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--brass);
+    border: 1px solid var(--border-accent);
+    padding: 0.3rem 0.7rem;
+    border-radius: 2px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .format-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--brass);
+    flex-shrink: 0;
+  }
+
+  .peptide-divider {
+    width: 24px;
+    height: 1px;
+    background: var(--brass);
+    opacity: 0.4;
+    margin-bottom: 1rem;
+  }
+
+  .peptide-desc {
+    font-size: 0.82rem;
+    line-height: 1.85;
+    color: var(--text-secondary);
+    font-weight: 300;
+  }
+
+  .peptide-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 1.4rem;
+  }
+
+  .tag {
+    font-size: 0.58rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--brass);
+    background: var(--tag-bg);
+    border: 1px solid rgba(180,148,90,0.2);
+    padding: 0.25rem 0.65rem;
+    border-radius: 1px;
+  }
+
+  /* CUSTOM / INQUIRE CARD */
+  .inquire-card {
+    background: transparent;
+    border: 1px dashed rgba(180,148,90,0.25);
+    padding: 2.2rem 2.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 0.8rem;
+    transition: border-color 0.3s, background 0.3s;
+  }
+
+  .inquire-card:hover {
+    background: var(--brass-dim);
+    border-color: rgba(180,148,90,0.5);
+  }
+
+  .inquire-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--text-secondary);
+  }
+
+  .inquire-text {
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+    line-height: 1.8;
+  }
+
+  .inquire-cta {
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--brass);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: 0.4rem;
+  }
+
+  .inquire-cta::after {
+    content: '→';
+    font-size: 0.8rem;
+  }
+
+  /* WHERE TO PIN PAGE */
+  .pin-page {
+    background: var(--inject-bg);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 6rem 4rem;
+    margin-bottom: 0;
+  }
+
+  .pin-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .pin-header {
+    text-align: center;
+    margin-bottom: 5rem;
+  }
+
+  .pin-eyebrow {
+    font-size: 0.62rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--brass);
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  .pin-eyebrow::before, .pin-eyebrow::after {
+    content: '';
+    display: block;
+    width: 30px;
+    height: 1px;
+    background: var(--brass);
+    opacity: 0.5;
+  }
+
+  .pin-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 300;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+  }
+
+  .pin-sub {
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    color: var(--text-secondary);
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .pin-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: start;
+  }
+
+  /* BODY SVG INFOGRAPHIC */
+  .body-figure-wrap {
+    position: relative;
+    display: flex;
+    justify-content: center;
+  }
+
+  .body-svg-container {
+    position: relative;
+    width: 100%;
+    max-width: 460px;
+  }
+
+  /* INJECTION SITES LIST */
+  .pin-sites {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .site-item {
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    gap: 1.5rem;
+    align-items: start;
+    padding: 1.8rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .site-item:first-child {
+    border-top: 1px solid var(--border);
+  }
+
+  .site-number {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--brass);
+    letter-spacing: 0.1em;
+    padding-top: 3px;
+  }
+
+  .site-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+    flex-shrink: 0;
+  }
+
+  .site-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 0.3rem;
+    line-height: 1.2;
+  }
+
+  .site-desc {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    line-height: 1.75;
+  }
+
+  .pin-rotation-note {
+    margin-top: 3.5rem;
+    padding: 2rem 2.5rem;
+    background: var(--brass-dim);
+    border: 1px solid var(--border-accent);
+    border-left: 3px solid var(--brass);
+  }
+
+  .rotation-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--brass-light);
+    margin-bottom: 0.6rem;
+    letter-spacing: 0.05em;
+  }
+
+  .rotation-text {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    line-height: 1.8;
+  }
+
+  .pin-tip-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    margin-top: 3rem;
+  }
+
+  .pin-tip {
+    background: var(--surface);
+    padding: 1.5rem 2rem;
+    border: 1px solid var(--border);
+  }
+
+  .pin-tip-label {
+    font-size: 0.58rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--brass);
+    margin-bottom: 0.5rem;
+  }
+
+  .pin-tip-text {
+    font-size: 0.76rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+
+  /* FOOTER */
+  footer {
+    padding: 3rem 4rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+
+  .footer-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    font-weight: 400;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--brass);
+  }
+
+  .footer-disclaimer {
+    font-size: 0.63rem;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+    max-width: 600px;
+    text-align: right;
+    line-height: 1.7;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    nav, .catalog-wrap, .pin-page { padding-left: 1.5rem; padding-right: 1.5rem; }
+    .hero { padding: 5rem 1.5rem; }
+    .peptide-grid { grid-template-columns: 1fr; }
+    .pin-layout { grid-template-columns: 1fr; gap: 3rem; }
+    .pin-tip-grid { grid-template-columns: 1fr; }
+    footer { flex-direction: column; text-align: center; }
+    .footer-disclaimer { text-align: center; }
+    .category-desc { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a class="nav-logo" href="#">Peptide Catalog</a>
+    <ul class="nav-links">
+      <li><a href="#weight-loss">Weight Loss</a></li>
+      <li><a href="#anti-aging">Anti-Aging</a></li>
+      <li><a href="#longevity">Longevity</a></li>
+      <li><a href="#cognitive">Cognitive</a></li>
+      <li><a href="#beauty">Beauty</a></li>
+      <li><a href="#sleep">Sleep</a></li>
+      <li><a href="#where-to-pin">Where to Pin</a></li>
+      <li><a href="peptide-pricing.html" style="color:var(--brass);">Pricing →</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Precision Peptide Reference</div>
+    <h1 class="hero-title">
+      Optimize.<br><em>Recover.</em><br>Perform.
+    </h1>
+    <p class="hero-sub">
+      A curated reference of pharmaceutical-grade peptides spanning metabolic optimization, cellular repair, cognitive enhancement, and longevity protocols.
+    </p>
+    <span class="hero-disclaimer">For informational & educational use only &nbsp;·&nbsp; Research purposes</span>
+  </div>
+  <div class="hero-scroll-hint">
+    <div class="scroll-line"></div>
+    Explore
+  </div>
+</section>
+
+<div class="catalog-wrap">
+
+  <!-- ═══════════════════════════════ WEIGHT LOSS ═══════════════════════════════ -->
+  <section id="weight-loss" class="category-block">
+    <div class="category-header">
+      <span class="category-number">01</span>
+      <h2 class="category-title">Metabolic & Weight Loss</h2>
+      <p class="category-desc">GLP-1 receptor agonists and multi-receptor compounds for body composition optimization</p>
+    </div>
+    <div class="peptide-grid">
+
+      <div class="peptide-card">
+        <div class="card-top">
+          <h3 class="peptide-name">Tirzepatide</h3>
+          <span class="peptide-format"><span class="format-dot"></span>Injectable</span>
+        </div>
+        <div class="peptide-divider"></div>
+        <p class="peptide-desc">A dual GIP and GLP-1 receptor agonist representing the current frontier of metabolic intervention. Tirzepatide works through two complementary pathways to regulate appetite, improve insulin sensitivity, and drive significant body fat reduction. Widely regarded as among the most effective compounds available for sustainable weight management and glucose control.</p>
+        <div class="peptide-tags">
+          <span class="tag">GLP-1 / GIP</span>
+          <span class="tag">Appetite Regulation</span>
+          <span class="tag">Insulin Sensitivity</span>
+          <span class="tag">Fat Loss</span>
+        </div>
+      </div>
+
+      <div class="peptide-card">
+        <div class="card-top">
+          <h3 class="peptide-name">Retatrutide</h3>
+          <span class="peptide-format"><span class="format-dot"></span>Injectable</span>
+        </div>
+        <div class="peptide-divider"></div>
+        <p class="peptide-desc">A next-generation triple agonist targeting GLP-1, GIP, and glucagon receptors simultaneously. This tri-receptor approach produces a more comprehensive metabolic effect than dual agonists — addressing energy intake, energy expenditure, and hepatic fat. Clinical data suggests among the highest weight reduction outcomes of any compound in this class.</p>
+        <div class="peptide-tags">
+          <span class="tag">Triple Agonist</span>
+          <span class="tag">Glucagon Receptor</span>
+          <span class="tag">Metabolic Rate</span>
+          <span class="tag">Advanced Protocol</span>
+        </div>
+      </div>
+
+      <div class="peptide-card">
+        <div class="card-top">
+          <h3 class="peptide-name">HCG</h3>
+          <span class="peptide-format"><span class="format-dot"></span>Injectable</span>
+        </div>
+        <div class="peptide-divider"></div>
+        <p class="peptide-desc">Human chorionic gonadotropin is a naturally occurring hormone used in peptide protocols for its roles in hormonal support, metabolic function, and lean tissue preservation. In men, HCG maintains testicular function and testosterone production during optimization protocols. Commonly incorporated to prevent muscle loss during caloric restriction phases.</p>
+        <div class="peptide-tags">
+          <span class="tag">Hormonal Support</span>
+          <span class="tag">Lean Preservation</span>
+          <span class="tag">Testosterone Support</span>
+          <span class="tag">Protocol Support</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ ANTI-AGING ═══════════════════════════════ -->
+  <section id="anti-aging" class="category-block">
+    <div class="category-header">
+      <span class="category-number">02</span>
+      <h2 class="category-title">Anti-Aging & Recovery</h2>
+      <p class="category-desc">Compounds targeting cellular repair, hormonal optimization, and structural tissue regeneration</p>
+    </div>
+    <div class="peptide-grid">
+
+      <div class="peptide-card">
+        <div class="card-top">
+          <h3 class="peptide-name">Sermorelin</h3>
+          <span class="peptide-format"><span class="format-dot"></span>Injectable</span>
+        </div>
+        <div class="peptide-divider"></div>
+        <p class="peptide-desc">A GHRH analog composed of the first 29 amino acids of endogenous growth hormone-releasing hormone. Sermorelin stimulates the pituitary gland to secrete GH naturally, supporting age-related decline in growth hormone output. Associated with improvements in body composition, sleep quality, recovery capacity, and overall vitality — without the suppressive feedback of exogenous GH administration.</p>
+        <div class="peptide-tags">
+          <span class="tag">GH Secretagogue</span>
+          <span class="tag">Sleep Quality</span>
+          <span class="tag">Recovery</span>
+          <span class="tag">Body Composition</span>
+        </div>
+      </div>
+
+      <div class="peptide-card">
+        <div class="card-top">
+          <h3 class="peptide-name">CJC-1295 + Ipamorelin</h3>
+          <span class="peptide-format"><span class="format-dot"></span>Injectable</span>
+        </div>
+        <div class="peptide-divider"></div>
+        <p class="peptide-desc">A synergistic combination protocol pairing a long-acting GHRH analog (CJC-1295) with a selective ghrelin receptor agonist (Ipamorelin). Together they produce amplified, sustained GH pulses that support fat metabolism, muscle repair, connective tissue integrity, and deep-sleep restorative cycles. Among the most popular stacks for anti-aging and performance optimization.</p>
+        <div class="peptide-tags">
+          <span class="tag">Synergistic Stack</span>
+          <span class="tag">GH Optimization</span>
+          <span class="tag">Muscle Repair</span>
+          <span class="tag">Deep Sleep</span>
+        </div>
+      </div>
+
+      <div class="peptide-card">
+        <div class="card-top">
+          <h3 class="peptide-name">Tesamorelin</h3>
+          <span class="peptide-format"><span class="format-dot"></span>Injectable</span>
+        </div>
+        <div class="peptide-divider"></div>
+        <p class="peptide-desc">A synthetic analog of growth hormone-releasing hormone (GHRH) with a clinically documented effect on visceral adipose tissue. Tesamorelin stimulates the pituitary to produce endogenous GH in a pulsatile, physiologically natural pattern. Particularly effective for reduction of abdominal fat while preserving lean mass — a common objective in body recomposition and anti-aging protocols.</p>
+        <div class="peptide-tags">
+          <span class="tag">GHRH Analog</span>
+          <span class="tag">Visceral Fat</span>
+          <span class="tag">GH Stimulation</span>
+          <span class="tag">Lean Mass Preservation</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ LONGEVITY ═══════════════════════════════ -->
+  <section id="longevity" class="category-block">
+    <div class="category-header">
+      <span class="category-number">03</span>
+      <h2 class="category-title">Longevity & Cellular Health</h2>
+      <p class="category-desc">Compounds targeting telomere biology, mitochondrial function, energy metabolism, and DNA repair pathways</p>
+    </div>
+    <div class="peptide-grid">
+
+      <div class="peptide-card">
+        <div class="card-top">
+          <h3 class="peptide-name">NAD+</h3>
+          <span class="peptide-format"><span class="format-dot"></span>Injectable</span>
+        </div>
+        <div class="peptide-divider"></div>
+        <p class="peptide-desc">Nicotinamide adenine dinucleotide is a critical coenzyme found in every living cell, essential to over 500 enzymatic reactions. NAD+ levels decline significantly with age, correlating with reduced mitochondrial efficiency, impaired DNA repair, metabolic dysfunction, and cognitive decline. Injectable NAD+ bypasses digestive degradation for maximum bioavailability, supporting energy, clarity, and cellular restoration.</p>
+        <div class="peptide-tags">
+          <span class="tag">Cellular Energy</span>
+          <span class="tag">DNA Repair</span>
+          <span class="tag">Sirtuin Activation</span>
+          <span class="tag">Metabolic Function</span>
+        </div>
+      </div>
+
+      <div class="peptide-card">
+        <div class="card-top">
+          <h3 class="peptide-name">MOTS-c</h3>
+          <span class="peptide-format"><span class="format-dot"></span>Injectable</span>
+        </div>
+        <div class="peptide-divider"></div>
+        <p class="peptide-desc">A mitochondria-derived peptide encoded within mitochondrial DNA — a discovery that challenged established models of where bioactive peptides originate. MOTS-c activates AMPK pathways to regulate glucose metabolism, enhance insulin sensitivity, improve exercise performance, and combat age-related metabolic decline. Considered one of the most promising longevity compounds in current research.</p>
+        <div class="peptide-tags">
+          <span class="tag">Mitochondrial Peptide</span>
+          <span class="tag">AMPK Activation</span>
+          <span class="tag">Insulin Sensitivity</span>
+          <span class="tag">Exercise Performance</span>
+        </div>
+      </div>
+
+      <div class="peptide-card">
+        <div class="card-top">
+          <h3 class="peptide-name">Epithalon</h3>
+          <span class="peptide-format"><span class="format-dot"></span>Injectable</span>
+        </div>
+        <div class="peptide-divider"></div>
+        <p class="peptide-desc">A tetrapeptide derived from the pineal gland with compelling data around telomere biology and longevity. Epithalon is believed to activate telomerase, potentially slowing the cellular shortening associated with biological aging. Research also points to benefits in melatonin normalization, immune modulation, circadian regulation, and overall healthspan extension.</p>
+        <div class="peptide-tags">
+          <span class="tag">Telomere Support</span>
+          <span class="tag">Pineal Gland</span>
+          <span class="tag">Longevity</span>
+          <span class="tag">Circadian Rhythm</span>
+        </div>
+      </div>
+
+      <div class="peptide-card">
+        <div class="card-top">
+          <h3 class="peptide-name">SS-31</h3>
+          <span class="peptide-format"><span class="format-dot"></span>Injectable</span>
+        </div>
+        <div class="peptide-divider"></div>
+        <p class="peptide-desc">A mitochondria-targeted antioxidant peptide that concentrates specifically at the inner mitochondrial membrane — the primary site of cellular energy production and oxidative stress. SS-31 protects mitochondrial integrity, reduces reactive oxygen species, and supports ATP synthesis efficiency. Relevant across aging, cardiovascular health, exercise recovery, and metabolic conditions.</p>
+        <div class="peptide-tags">
+          <span class="tag">Mitochondrial Health</span>
+          <span class="tag">Oxidative Stress</span>
+          <span class="tag">Energy Production</span>
+          <span class="tag">Cellular Protection</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ COGNITIVE ═══════════════════════════════ -->
+  <section id="cognitive" class="category-block">
+    <div class="category-header">
+      <span class="category-number">04</span>
+      <h2 class="category-title">Cognitive & Mood Enhancement</h2>
+      <p class="category-desc">Neuropeptides supporting focus, stress resilience, memory, and neurological performance</p>
+    </div>
+    <div class="peptide-grid">
+
+      <div class="peptide-card">
+        <div class="card-top">
+          <h3 class="peptide-name">Semax</h3>
+          <span class="peptide-format"><span class="format-dot"></span>Nasal Spray</span>
+        </div>
+        <div class="peptide-divider"></div>
+        <p class="peptide-desc">A synthetic heptapeptide derived from the ACTH sequence, developed originally in Russia for neurological applications. Semax elevates BDNF (brain-derived neurotrophic factor) and modulates dopaminergic and serotonergic activity, producing marked improvements in focus, working memory, stress tolerance, and cognitive stamina. Administered as a nasal spray for rapid CNS uptake, making it a preferred choice for acute cognitive performance demands.</p>
+        <div class="peptide-tags">
+          <span class="tag">BDNF Elevation</span>
+          <span class="tag">Focus & Memory</span>
+          <span class="tag">Neuroprotection</span>
+          <span class="tag">Nasal Delivery</span>
+        </div>
+      </div>
+
+      <div class="peptide-card">
+        <div class="card-top">
+          <h3 class="peptide-name">Selank</h3>
+          <span class="peptide-format"><span class="format-dot"></span>Nasal Spray</span>
+        </div>
+        <div class="peptide-divider"></div>
+        <p class="peptide-desc">A synthetic analog of the endogenous peptide tuftsin, developed as an anxiolytic with nootropic properties. Selank modulates GABAergic and serotonergic systems to reduce anxiety without sedation or cognitive impairment — a key distinction from pharmaceutical anxiolytics. Users report improved mood stability, reduced mental fatigue, and sharper cognitive function under stress. Nasal administration enables direct central nervous system access.</p>
+        <div class="peptide-tags">
+          <span class="tag">Anxiolytic</span>
+          <span class="tag">Mood Stabilization</span>
+          <span class="tag">Stress Resilience</span>
+          <span class="tag">Nasal Delivery</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ BEAUTY ═══════════════════════════════ -->
+  <section id="beauty" class="category-block">
+    <div class="category-header">
+      <span class="category-number">05</span>
+      <h2 class="category-title">Beauty & Skin Optimization</h2>
+      <p class="category-desc">Peptides targeting collagen synthesis, antioxidant defense, pigmentation, skin regeneration, and hair follicle health</p>
+    </div>
+    <div class="peptide-grid">
+
+      <div class="peptide-card">
+        <div class="card-top">
+          <h3 class="peptide-name">GHK-Cu</h3>
+          <span class="peptide-format"><span class="format-dot"></span>Injectable</span>
+        </div>
+        <div class="peptide-divider"></div>
+        <p class="peptide-desc">A copper-binding tripeptide that occurs naturally in human plasma, declining significantly with age. GHK-Cu activates over 4,000 genes related to tissue repair, anti-inflammatory response, collagen and elastin synthesis, and antioxidant defense. Systemically administered, it supports skin density, wound healing, hair follicle stimulation, and a visible reduction in photoaging markers. One of the most research-supported peptides for structural skin regeneration.</p>
+        <div class="peptide-tags">
+          <span class="tag">Collagen Synthesis</span>
+          <span class="tag">Skin Regeneration</span>
+          <span class="tag">Hair Health</span>
+          <span class="tag">Wound Repair</span>
+        </div>
+      </div>
+
+      <div class="peptide-card">
+        <div class="card-top">
+          <h3 class="peptide-name">GLOW Blend</h3>
+          <span class="peptide-format"><span class="format-dot"></span>Injectable</span>
+        </div>
+        <div class="peptide-divider"></div>
+        <p class="peptide-desc">A proprietary formulation combining synergistic peptides and compounds selected for comprehensive aesthetic and skin health outcomes. Designed to amplify the individual effects of collagen-building, antioxidant, and tissue-remodeling compounds when administered together. The GLOW Blend is suited for those seeking a streamlined, multi-target approach to skin vitality, luminosity, and whole-body rejuvenation.</p>
+        <div class="peptide-tags">
+          <span class="tag">Proprietary Blend</span>
+          <span class="tag">Skin Vitality</span>
+          <span class="tag">Luminosity</span>
+          <span class="tag">Multi-Target</span>
+        </div>
+      </div>
+
+      <div class="peptide-card">
+        <div class="card-top">
+          <h3 class="peptide-name">Melanotan II</h3>
+          <span class="peptide-format"><span class="format-dot"></span>Injectable</span>
+        </div>
+        <div class="peptide-divider"></div>
+        <p class="peptide-desc">A synthetic analog of alpha-melanocyte stimulating hormone (α-MSH) that binds to melanocortin receptors to stimulate melanin production in the skin. MT-II produces a deep, UV-independent tan while offering photoprotective effects by densifying melanin coverage prior to sun exposure. Additionally studied for its effects on libido and appetite suppression. Commonly used in cosmetic and body optimization protocols.</p>
+        <div class="peptide-tags">
+          <span class="tag">Melanin Stimulation</span>
+          <span class="tag">Photoprotection</span>
+          <span class="tag">Pigmentation</span>
+          <span class="tag">Cosmetic Protocol</span>
+        </div>
+      </div>
+
+      <div class="peptide-card">
+        <div class="card-top">
+          <h3 class="peptide-name">Glutathione</h3>
+          <span class="peptide-format"><span class="format-dot"></span>Injectable</span>
+        </div>
+        <div class="peptide-divider"></div>
+        <p class="peptide-desc">The body's master antioxidant — a tripeptide produced endogenously but depleted by aging, stress, illness, and environmental exposure. Injectable glutathione replenishes systemic levels more effectively than oral supplementation, supporting liver detoxification, immune defense, skin luminosity, and protection against oxidative cellular damage. Widely used both standalone and as a complement to other peptide protocols.</p>
+        <div class="peptide-tags">
+          <span class="tag">Master Antioxidant</span>
+          <span class="tag">Detoxification</span>
+          <span class="tag">Immune Support</span>
+          <span class="tag">Skin Luminosity</span>
+        </div>
+      </div>
+
+      <!-- INQUIRE CARD -->
+      <div class="peptide-card inquire-card">
+        <div class="inquire-label">Don't see what you need?</div>
+        <p class="inquire-text">Our catalog reflects current inventory but represents only a portion of what's available. Specialized compounds, custom blends, and less common peptides are frequently sourced on request.</p>
+        <div class="inquire-cta">Reach out to inquire</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ SLEEP SUPPORT ═══════════════════════════════ -->
+  <section id="sleep" class="category-block">
+    <div class="category-header">
+      <span class="category-number">06</span>
+      <h2 class="category-title">Sleep Support</h2>
+      <p class="category-desc">Foundational sleep optimization tools for recovery, restoration, and whole-body wellness</p>
+    </div>
+    <div class="peptide-grid">
+
+      <div class="peptide-card">
+        <div class="card-top">
+          <h3 class="peptide-name">Sleep Dealer<br><span style="font-size:1rem;font-weight:300;letter-spacing:0.06em;color:var(--text-secondary);">Mouth Tape</span></h3>
+          <span class="peptide-format"><span class="format-dot"></span>Topical</span>
+        </div>
+        <div class="peptide-divider"></div>
+        <p class="peptide-desc">Sleep Dealer mouth tape is a precision-designed adhesive strip worn over the lips during sleep to encourage nasal breathing — the physiologically optimal breathing pattern for rest and recovery. Mouth breathing during sleep bypasses the nasal cavity's natural filtration and humidification system, leading to dry mouth, disrupted sleep architecture, elevated cortisol, and impaired oxygen exchange. Nasal breathing, by contrast, produces nitric oxide in the sinuses — a vasodilator that improves blood oxygenation, lowers resting heart rate, and supports deeper, more restorative sleep cycles.</p>
+        <p class="peptide-desc" style="margin-top:0.85rem;">Beyond oxygen efficiency, consistent nasal breathing during sleep has been linked to reduced snoring, improved HRV (heart rate variability), better morning energy, and enhanced recovery from both physical and cognitive demands. Sleep Dealer's formulation features a hydrating lip mask layer built into the adhesive — so you wake with softer lips, not just better sleep. A simple intervention with compounding nightly returns.</p>
+        <div class="peptide-tags">
+          <span class="tag">Nasal Breathing</span>
+          <span class="tag">Nitric Oxide</span>
+          <span class="tag">Sleep Architecture</span>
+          <span class="tag">HRV Support</span>
+          <span class="tag">Recovery</span>
+          <span class="tag">Hydrating Lip Mask</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</div><!-- end catalog-wrap -->
+
+<!-- ═══════════════════════════════ WHERE TO PIN ═══════════════════════════════ -->
+<section id="where-to-pin" class="pin-page">
+  <div class="pin-inner">
+
+    <div class="pin-header">
+      <div class="pin-eyebrow">Subcutaneous Injection Guide</div>
+      <h2 class="pin-title">Where to Pin</h2>
+      <p class="pin-sub">Optimal injection sites for subcutaneous peptide administration, with guidance on technique and rotation protocol.</p>
+    </div>
+
+    <div class="pin-layout">
+
+      <!-- BODY INFOGRAPHIC -->
+      <div class="body-figure-wrap">
+        <svg viewBox="0 0 420 600" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:420px;">
+          <defs>
+            <radialGradient id="bodyGrad" cx="50%" cy="40%" r="60%">
+              <stop offset="0%" stop-color="#2a2a2a"/>
+              <stop offset="100%" stop-color="#161616"/>
+            </radialGradient>
+            <radialGradient id="zoneA" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#b4945a" stop-opacity="0.35"/>
+              <stop offset="100%" stop-color="#b4945a" stop-opacity="0"/>
+            </radialGradient>
+            <radialGradient id="zoneB" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#6fa3b4" stop-opacity="0.35"/>
+              <stop offset="100%" stop-color="#6fa3b4" stop-opacity="0"/>
+            </radialGradient>
+            <radialGradient id="zoneC" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#8ab48b" stop-opacity="0.35"/>
+              <stop offset="100%" stop-color="#8ab48b" stop-opacity="0"/>
+            </radialGradient>
+            <radialGradient id="zoneD" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#b47a6f" stop-opacity="0.35"/>
+              <stop offset="100%" stop-color="#b47a6f" stop-opacity="0"/>
+            </radialGradient>
+            <radialGradient id="zoneE" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#9b8ab4" stop-opacity="0.35"/>
+              <stop offset="100%" stop-color="#9b8ab4" stop-opacity="0"/>
+            </radialGradient>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="3" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+
+          <!-- Body silhouette - clean abstract form -->
+          <!-- Head -->
+          <ellipse cx="210" cy="62" rx="42" ry="50" fill="url(#bodyGrad)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+          <!-- Neck -->
+          <rect x="196" y="108" width="28" height="22" rx="4" fill="url(#bodyGrad)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+          <!-- Torso -->
+          <path d="M150 128 L160 130 C175 132 200 134 210 134 C220 134 245 132 260 130 L270 128 L278 200 L282 290 L210 300 L138 290 L142 200 Z" fill="url(#bodyGrad)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+          <!-- Left arm -->
+          <path d="M150 132 L120 140 L108 180 L110 240 L118 278 L130 278 L134 240 L136 185 L154 148 Z" fill="url(#bodyGrad)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+          <!-- Right arm -->
+          <path d="M270 132 L300 140 L312 180 L310 240 L302 278 L290 278 L286 240 L284 185 L266 148 Z" fill="url(#bodyGrad)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+          <!-- Left leg -->
+          <path d="M142 295 L140 360 L136 430 L134 510 L148 512 L156 430 L162 355 L168 298 Z" fill="url(#bodyGrad)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+          <!-- Right leg -->
+          <path d="M278 295 L280 360 L284 430 L286 510 L272 512 L264 430 L258 355 L252 298 Z" fill="url(#bodyGrad)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+
+          <!-- ── ZONE 1: Belly button area ── -->
+          <ellipse cx="210" cy="218" rx="52" ry="42" fill="url(#zoneA)" filter="url(#glow)"/>
+          <ellipse cx="210" cy="218" rx="52" ry="42" fill="none" stroke="#b4945a" stroke-width="1" stroke-dasharray="4 3" opacity="0.6"/>
+          <!-- belly button dot -->
+          <circle cx="210" cy="218" r="3" fill="#b4945a" opacity="0.8"/>
+          <!-- radius indicator -->
+          <circle cx="210" cy="218" r="40" fill="none" stroke="#b4945a" stroke-width="0.5" stroke-dasharray="2 4" opacity="0.3"/>
+          <text x="270" y="213" fill="#b4945a" font-family="DM Mono, monospace" font-size="9" opacity="0.8">01</text>
+          <line x1="262" y1="218" x2="250" y2="218" stroke="#b4945a" stroke-width="0.5" opacity="0.5"/>
+
+          <!-- ── ZONE 2: Love handles ── -->
+          <!-- Left -->
+          <ellipse cx="155" cy="260" rx="28" ry="22" fill="url(#zoneB)" filter="url(#glow)"/>
+          <ellipse cx="155" cy="260" rx="28" ry="22" fill="none" stroke="#6fa3b4" stroke-width="1" stroke-dasharray="4 3" opacity="0.6"/>
+          <circle cx="155" cy="260" r="3" fill="#6fa3b4" opacity="0.8"/>
+          <!-- Right -->
+          <ellipse cx="265" cy="260" rx="28" ry="22" fill="url(#zoneB)" filter="url(#glow)"/>
+          <ellipse cx="265" cy="260" rx="28" ry="22" fill="none" stroke="#6fa3b4" stroke-width="1" stroke-dasharray="4 3" opacity="0.6"/>
+          <circle cx="265" cy="260" r="3" fill="#6fa3b4" opacity="0.8"/>
+          <text x="295" y="255" fill="#6fa3b4" font-family="DM Mono, monospace" font-size="9" opacity="0.8">02</text>
+          <line x1="293" y1="260" x2="284" y2="260" stroke="#6fa3b4" stroke-width="0.5" opacity="0.5"/>
+
+          <!-- ── ZONE 3: Upper glute ── (shown from front as hip)-->
+          <ellipse cx="163" cy="292" rx="22" ry="18" fill="url(#zoneC)" filter="url(#glow)"/>
+          <ellipse cx="163" cy="292" rx="22" ry="18" fill="none" stroke="#8ab48b" stroke-width="1" stroke-dasharray="4 3" opacity="0.6"/>
+          <circle cx="163" cy="292" r="3" fill="#8ab48b" opacity="0.8"/>
+          <ellipse cx="257" cy="292" rx="22" ry="18" fill="url(#zoneC)" filter="url(#glow)"/>
+          <ellipse cx="257" cy="292" rx="22" ry="18" fill="none" stroke="#8ab48b" stroke-width="1" stroke-dasharray="4 3" opacity="0.6"/>
+          <circle cx="257" cy="292" r="3" fill="#8ab48b" opacity="0.8"/>
+          <text x="124" y="287" fill="#8ab48b" font-family="DM Mono, monospace" font-size="9" opacity="0.8" text-anchor="end">03</text>
+          <line x1="126" y1="292" x2="140" y2="292" stroke="#8ab48b" stroke-width="0.5" opacity="0.5"/>
+
+          <!-- ── ZONE 4: Back of arm (tricep) ── -->
+          <!-- Left arm back -->
+          <ellipse cx="117" cy="218" rx="14" ry="22" fill="url(#zoneD)" filter="url(#glow)"/>
+          <ellipse cx="117" cy="218" rx="14" ry="22" fill="none" stroke="#b47a6f" stroke-width="1" stroke-dasharray="4 3" opacity="0.6"/>
+          <circle cx="117" cy="218" r="3" fill="#b47a6f" opacity="0.8"/>
+          <!-- Right arm back -->
+          <ellipse cx="303" cy="218" rx="14" ry="22" fill="url(#zoneD)" filter="url(#glow)"/>
+          <ellipse cx="303" cy="218" rx="14" ry="22" fill="none" stroke="#b47a6f" stroke-width="1" stroke-dasharray="4 3" opacity="0.6"/>
+          <circle cx="303" cy="218" r="3" fill="#b47a6f" opacity="0.8"/>
+          <text x="330" y="213" fill="#b47a6f" font-family="DM Mono, monospace" font-size="9" opacity="0.8">04</text>
+          <line x1="328" y1="218" x2="318" y2="218" stroke="#b47a6f" stroke-width="0.5" opacity="0.5"/>
+
+          <!-- ── ZONE 5: Top of thigh ── -->
+          <ellipse cx="152" cy="360" rx="22" ry="28" fill="url(#zoneE)" filter="url(#glow)"/>
+          <ellipse cx="152" cy="360" rx="22" ry="28" fill="none" stroke="#9b8ab4" stroke-width="1" stroke-dasharray="4 3" opacity="0.6"/>
+          <circle cx="152" cy="360" r="3" fill="#9b8ab4" opacity="0.8"/>
+          <ellipse cx="268" cy="360" rx="22" ry="28" fill="url(#zoneE)" filter="url(#glow)"/>
+          <ellipse cx="268" cy="360" rx="22" ry="28" fill="none" stroke="#9b8ab4" stroke-width="1" stroke-dasharray="4 3" opacity="0.6"/>
+          <circle cx="268" cy="360" r="3" fill="#9b8ab4" opacity="0.8"/>
+          <text x="295" y="355" fill="#9b8ab4" font-family="DM Mono, monospace" font-size="9" opacity="0.8">05</text>
+          <line x1="293" y1="360" x2="291" y2="360" stroke="#9b8ab4" stroke-width="0.5" opacity="0.5"/>
+
+          <!-- Legend label -->
+          <text x="210" y="555" fill="#5a5650" font-family="Jost, sans-serif" font-size="9" text-anchor="middle" letter-spacing="2" font-weight="300">SUBCUTANEOUS INJECTION ZONES</text>
+          <line x1="130" y1="551" x2="185" y2="551" stroke="#5a5650" stroke-width="0.5" opacity="0.5"/>
+          <line x1="235" y1="551" x2="290" y2="551" stroke="#5a5650" stroke-width="0.5" opacity="0.5"/>
+        </svg>
+      </div>
+
+      <!-- SITES LIST + NOTES -->
+      <div>
+        <div class="pin-sites">
+
+          <div class="site-item">
+            <div class="site-number"><span class="site-dot" style="background:#b4945a;display:inline-block;"></span><br>01</div>
+            <div>
+              <div class="site-name">Periumbilical Abdomen</div>
+              <p class="site-desc">Within approximately 2 inches surrounding the navel — avoiding the belly button itself. The most abundant subcutaneous fat depot on most bodies, offering consistent tissue depth and excellent compound absorption. Preferred primary site for most peptide protocols.</p>
+            </div>
+          </div>
+
+          <div class="site-item">
+            <div class="site-number"><span class="site-dot" style="background:#6fa3b4;display:inline-block;"></span><br>02</div>
+            <div>
+              <div class="site-name">Lateral Abdomen (Love Handles)</div>
+              <p class="site-desc">The flanks along the lateral abdomen provide ample subcutaneous tissue with minimal sensitivity. An excellent rotation site that gives the primary abdominal zone adequate recovery time between injections.</p>
+            </div>
+          </div>
+
+          <div class="site-item">
+            <div class="site-number"><span class="site-dot" style="background:#8ab48b;display:inline-block;"></span><br>03</div>
+            <div>
+              <div class="site-name">Upper Glute</div>
+              <p class="site-desc">The upper outer quadrant of the gluteal region offers a substantial subcutaneous fat layer with minimal nerve density. Well-tolerated for larger volume injections and a commonly preferred site for those with lower abdominal sensitivity.</p>
+            </div>
+          </div>
+
+          <div class="site-item">
+            <div class="site-number"><span class="site-dot" style="background:#b47a6f;display:inline-block;"></span><br>04</div>
+            <div>
+              <div class="site-name">Posterior Upper Arm (Tricep)</div>
+              <p class="site-desc">The back of the upper arm, in the tricep region, has reliable subcutaneous tissue that absorbs well. Slightly less accessible for self-injection but manageable with practice. Useful for daily rotation variety.</p>
+            </div>
+          </div>
+
+          <div class="site-item">
+            <div class="site-number"><span class="site-dot" style="background:#9b8ab4;display:inline-block;"></span><br>05</div>
+            <div>
+              <div class="site-name">Anterior Thigh</div>
+              <p class="site-desc">The outer top portion of the thigh — a large, accessible surface with consistent subcutaneous depth. Easily self-administered and comfortable for most users. A reliable rotation site, especially when other zones need rest.</p>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="pin-rotation-note">
+          <div class="rotation-title">⟳ &nbsp;Always Rotate Injection Sites</div>
+          <p class="rotation-text">Repeated injections to the same location cause lipohypertrophy — a hardening of subcutaneous tissue that impairs absorption and causes visible scarring. Systematically rotate through all available sites, spacing consecutive injections by at least 1–2 cm. Maintain a simple log to track rotation if needed. Consistent rotation ensures optimal absorption, prevents tissue damage, and preserves site integrity long-term.</p>
+        </div>
+
+        <div class="pin-tip-grid">
+          <div class="pin-tip">
+            <div class="pin-tip-label">Needle Angle</div>
+            <p class="pin-tip-text">Use a 45° insertion angle for subcutaneous delivery with a short needle (4–6mm). Pinch the skin slightly to create a skin tent if tissue is thin.</p>
+          </div>
+          <div class="pin-tip">
+            <div class="pin-tip-label">Temperature</div>
+            <p class="pin-tip-text">Allow refrigerated compounds to reach room temperature for 5–10 minutes before injection. Cold solutions can cause localized stinging and slower absorption.</p>
+          </div>
+          <div class="pin-tip">
+            <div class="pin-tip-label">Injection Depth</div>
+            <p class="pin-tip-text">Target the subcutaneous fat layer — beneath the skin but above muscle. Correct depth produces minimal resistance; muscle injection stings more sharply.</p>
+          </div>
+          <div class="pin-tip">
+            <div class="pin-tip-label">Post-Injection</div>
+            <p class="pin-tip-text">Apply gentle pressure with a dry cotton ball — do not rub. Rubbing disperses the compound too rapidly and increases bruising risk at the site.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<div style="border-top: 1px solid var(--border); margin: 0;">
+  <footer>
+    <span class="footer-logo">Peptide Catalog</span>
+    <p class="footer-disclaimer">This catalog is provided for educational and informational purposes only. These compounds are intended for research use. This is not medical advice. Consult a qualified healthcare provider before initiating any peptide protocol. Not for sale to minors.</p>
+  </footer>
+</div>
+
+</body>
+</html>
